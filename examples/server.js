@@ -33,6 +33,7 @@ router.get('/simple/get', function (req, res) {
 
 })
 
+/** 处理base 测试案例 */
 router.post('base/post', function (req, res) {
     res.json(req.body)
 })
@@ -49,6 +50,26 @@ router.post('base/buffer', function (req, res) {
         res.json(bug.toJSON())
     })
 })
+
+/** 处理error 测试案例 */
+router.get('/error/get', function(req, res) {
+    if (Math.random() > 0.5) {
+        res.json({
+            msg: 'hello world'
+        })
+    } else {
+        res.status(500)
+        res.end()
+    }
+})
+router.get('/error/timeout', function(req, res) {
+    setTimeout(() => {
+        res.json({
+            message: 'hello world'
+        })
+    }, 3000)
+})
+
 
 app.use(router)
 
