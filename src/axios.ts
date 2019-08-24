@@ -1,39 +1,16 @@
-import { AxiosRequestConfig, AxiosPromise, AxiosResponse } from './types'
-import xhr from './xhr'
-import { buildUrl } from './helpers/url'
-import { transformRequest, transformResponse } from './helpers/data'
-import { processHeaders } from './helpers/headers'
+import { AxiosInstance } from './types'
+import Axios from './core/Axios'
+import { extend } from './helpers/util'
 
-function axios(config: AxiosRequestConfig): AxiosPromise {
-  transformConfig(config)
-  return xhr(config).then(res => {
-    return transformResponseData(res)
-  })
+function cerateInstance(): AxiosInstance {
+  const context = new Axios()
+  const instance = Axios.prototype.request.bind(context) // 首先 instance是一个方法 ， 可以Axios({...})
+
+  extend(instance, context) // 其次，把context上的所有方法拷贝到instance上面，可以Axios.get(url, ....)
+
+  return instance as AxiosInstance
 }
 
-function transformConfig(config: AxiosRequestConfig) {
-  config.url = transformUrl(config)
-  config.headers = transformHeaders(config)
-  config.data = transformRequestData(config)
-}
-
-function transformUrl(config: AxiosRequestConfig) {
-  const { url, params } = config
-  return buildUrl(url, params)
-}
-
-function transformRequestData(config: AxiosRequestConfig): any {
-  return transformRequest(config)
-}
-
-function transformHeaders(config: AxiosRequestConfig): any {
-  const { headers = {}, data } = config
-  return processHeaders(headers, data)
-}
-
-function transformResponseData(res: AxiosResponse): AxiosResponse {
-  res.data = transformResponse(res.data)
-  return res
-}
+const axios = cerateInstance()
 
 export default axios
