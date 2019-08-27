@@ -26,12 +26,10 @@ app.use(bodyParser.urlencoded({ extended: true }))
 const router = express.Router()
 
 registerSimpleRouter()
-
 registerBaseRouter()
-
 registerErrorRouter()
-
 registerExtendRouter()
+interceptorRouter()
 
 router.get('/simple/get', function (req, res) {
     res.json({
@@ -126,6 +124,13 @@ function registerExtendRouter() {
                 age: 18
             }
         })
+    })
+}
+
+/** interceptor 拦截器 */
+function interceptorRouter() {
+    router.get('/interceptor/get', function(req, res) {
+        res.end()
     })
 }
 
