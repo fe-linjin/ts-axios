@@ -1,6 +1,14 @@
 import { isDate, isPlainObject } from './util'
 import { encode } from 'punycode'
 
+/**
+ * build url 处理请求url参数
+ *
+ * @export
+ * @param {string} url
+ * @param {*} [params]
+ * @returns {string}
+ */
 export function buildUrl(url: string, params?: any): string {
   if (!params) {
     return url

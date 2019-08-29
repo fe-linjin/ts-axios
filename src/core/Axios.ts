@@ -1,6 +1,7 @@
 import { AxiosRequestConfig, AxiosPromise, Method, ResolvedFn, RejectedFn } from '../types'
 import dispatchRequest from './dispatchRequest'
 import InterceptorManager from './interceptorManager'
+import mergeConfig from './mergeConfig'
 
 interface Interceptors {
   request: InterceptorManager<AxiosRequestConfig>
@@ -13,9 +14,11 @@ interface PromiseChain<T> {
 }
 
 export default class Axios {
+  defaults: AxiosRequestConfig
   private interceptors: Interceptors
 
-  constructor() {
+  constructor(initDefaults: AxiosRequestConfig) {
+    this.defaults = initDefaults
     this.interceptors = {
       request: new InterceptorManager<AxiosRequestConfig>(),
       response: new InterceptorManager<AxiosPromise>()
@@ -32,6 +35,9 @@ export default class Axios {
       config = url
     }
 
+    /** 合并默认请求和用户config */
+    config = mergeConfig(this.defaults, config)
+
     const chain: PromiseChain<any>[] = [
       {
         resolved: dispatchRequest,
@@ -39,6 +45,7 @@ export default class Axios {
       }
     ]
 
+    /** 收集拦截器上的信息  */
     this.interceptors.request.forEach(interceptor => {
       chain.unshift(interceptor)
     })
@@ -49,6 +56,7 @@ export default class Axios {
 
     let promise = Promise.resolve(config)
 
+    /** 链式处理 request interceptor2 -> request interceptor1 -> send request -> response interceptor1 -> response interceptor2 */
     while (chain.length) {
       const { resolved, rejected } = chain.shift()!
       promise = promise.then(resolved, rejected)

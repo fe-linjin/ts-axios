@@ -8,6 +8,14 @@ const WebpackConfig = require('./webpack.config')
 const app = express()
 const compiler = webpack(WebpackConfig)
 
+const registerSimpleRouter = require('./server-routers/simple')
+const registerBaseRouter = require('./server-routers/base')
+const registerErrorRouter = require('./server-routers/error')
+const registerExtendRouter = require('./server-routers/extend')
+const transformRouter = require('./server-routers/transform')
+const interceptorRouter = require('./server-routers/interceptor')
+const registerConfigRouter = require('./server-routers/config')
+
 app.use(webpackDevMiddleware(compiler, {
     publicPath: '/__build__',
     stats: {
@@ -25,115 +33,13 @@ app.use(bodyParser.urlencoded({ extended: true }))
 
 const router = express.Router()
 
-registerSimpleRouter()
-registerBaseRouter()
-registerErrorRouter()
-registerExtendRouter()
-interceptorRouter()
-
-router.get('/simple/get', function (req, res) {
-    res.json({
-        msg: `hello world`
-    })
-
-
-})
-
-function registerSimpleRouter() {}
-
-/** 处理base 测试案例 */
-function registerBaseRouter() {
-    router.post('base/post', function (req, res) {
-        res.json(req.body)
-    })
-
-    router.post('base/buffer', function (req, res) {
-        let msg = []
-        req.on('data', chunk => {
-            if (chunk) {
-                msg.push(chunk)
-            }
-        })
-        req.on('end', () => {
-            let bug = Buffer.concat(msg)
-            res.json(bug.toJSON())
-        })
-    })
-}
-
-/** 处理error 测试案例 */
-function registerErrorRouter() {
-    router.get('/error/get', function (req, res) {
-        if (Math.random() > 0.5) {
-            res.json({
-                msg: 'hello world'
-            })
-        } else {
-            res.status(500)
-            res.end()
-        }
-    })
-
-    router.get('/error/timeout', function (req, res) {
-        setTimeout(() => {
-            res.json({
-                message: 'hello world'
-            })
-        }, 3000)
-    })
-}
-
-/** extend 路由 */
-function registerExtendRouter() {
-    router.get('/extend/get', function (req, res) {
-        res.json({
-            msg: 'hello world'
-        })
-    })
-
-    router.options('/extend/options', function (req, res) {
-        res.end()
-    })
-
-    router.delete('/extend/delete', function (req, res) {
-        res.end()
-    })
-
-    router.head('/extend/head', function (req, res) {
-        res.end()
-    })
-
-    router.post('/extend/post', function (req, res) {
-        res.json(req.body)
-    })
-
-    router.put('/extend/put', function (req, res) {
-        res.json(req.body)
-    })
-
-    router.patch('/extend/patch', function (req, res) {
-        res.json(req.body)
-    })
-
-    router.get('/extend/user', function(req, res) {
-        res.json({
-            code: 0,
-            message: 'ok',
-            result: {
-                name: 'jack',
-                age: 18
-            }
-        })
-    })
-}
-
-/** interceptor 拦截器 */
-function interceptorRouter() {
-    router.get('/interceptor/get', function(req, res) {
-        res.end()
-    })
-}
-
+registerSimpleRouter(router)
+registerBaseRouter(router)
+registerErrorRouter(router)
+registerExtendRouter(router)
+interceptorRouter(router)
+registerConfigRouter(router)
+transformRouter(router)
 
 app.use(router)
 

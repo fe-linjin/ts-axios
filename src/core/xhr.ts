@@ -1,6 +1,6 @@
-import { AxiosRequestConfig, AxiosPromise, AxiosResponse } from './types'
-import { parseHeaders } from './helpers/headers'
-import { createError } from './helpers/error'
+import { AxiosRequestConfig, AxiosPromise, AxiosResponse } from '../types'
+import { parseHeaders } from '../helpers/headers'
+import { createError } from '../helpers/error'
 
 export default function xhr(config: AxiosRequestConfig): AxiosPromise {
   return new Promise((resolve, reject) => {
@@ -52,10 +52,10 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise {
     }
 
     Object.keys(headers).forEach(name => {
+      console.log(headers)
       if (data === null && name.toLowerCase() === 'content-type') {
         delete headers[name]
-      }
-      {
+      } else {
         request.setRequestHeader(name, headers[name])
       }
     })
