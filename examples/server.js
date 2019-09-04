@@ -1,9 +1,13 @@
 const express = require('express')
 const bodyParser = require('body-parser')
+const cookieParser = require('cookie-parser')
 const webpack = require('webpack')
 const webpackDevMiddleware = require('webpack-dev-middleware')
 const webpackHotMiddleware = require('webpack-hot-middleware')
 const WebpackConfig = require('./webpack.config')
+
+/** 启动server 2 */
+require('./server2')
 
 const app = express()
 const compiler = webpack(WebpackConfig)
@@ -16,6 +20,7 @@ const transformRouter = require('./server-routers/transform')
 const interceptorRouter = require('./server-routers/interceptor')
 const registerConfigRouter = require('./server-routers/config')
 const cancelRouter = require('./server-routers/cancel')
+const moreRouter = require('./server-routers/more')
 
 app.use(webpackDevMiddleware(compiler, {
     publicPath: '/__build__',
@@ -31,6 +36,7 @@ app.use(express.static(__dirname))
 
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
+app.use(cookieParser())
 
 const router = express.Router()
 
@@ -42,6 +48,7 @@ interceptorRouter(router)
 registerConfigRouter(router)
 transformRouter(router)
 cancelRouter(router)
+moreRouter(router)
 
 app.use(router)
 
