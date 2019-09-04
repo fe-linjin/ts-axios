@@ -4,7 +4,7 @@ import { createError } from '../helpers/error'
 
 export default function xhr(config: AxiosRequestConfig): AxiosPromise {
   return new Promise((resolve, reject) => {
-    const { data = null, url, method = 'get', headers, responseType, timeout } = config
+    const { data = null, url, method = 'get', headers, responseType, timeout, cancelToken } = config
 
     const request = new XMLHttpRequest()
 
@@ -47,7 +47,7 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise {
     }
 
     request.ontimeout = function handleTimeout() {
-      // // 错误情况2： 超时错误
+      // 错误情况2： 超时错误
       reject(createError(`Timeout of ${timeout} error`, config, 'ECONNABORTED', request))
     }
 
@@ -59,6 +59,14 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise {
         request.setRequestHeader(name, headers[name])
       }
     })
+
+    /** 再发送之前，进行判断是否取消 */
+    if (cancelToken) {
+      cancelToken.promise.then(reason => {
+        request.abort() // 取消
+        reject(reason) // catch的时候，能捕获本次异步取消的错误
+      })
+    }
 
     request.send(data)
 

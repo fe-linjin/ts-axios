@@ -15,6 +15,7 @@ const registerExtendRouter = require('./server-routers/extend')
 const transformRouter = require('./server-routers/transform')
 const interceptorRouter = require('./server-routers/interceptor')
 const registerConfigRouter = require('./server-routers/config')
+const cancelRouter = require('./server-routers/cancel')
 
 app.use(webpackDevMiddleware(compiler, {
     publicPath: '/__build__',
@@ -40,6 +41,7 @@ registerExtendRouter(router)
 interceptorRouter(router)
 registerConfigRouter(router)
 transformRouter(router)
+cancelRouter(router)
 
 app.use(router)
 
