@@ -1,6 +1,11 @@
 import { isDate, isPlainObject } from './util'
 import { encode } from 'punycode'
 
+interface ResolveUrl {
+  protocol: string
+  host: string
+}
+
 /**
  * build url 处理请求url参数
  *
@@ -51,4 +56,23 @@ export function buildUrl(url: string, params?: any): string {
   }
 
   return url
+}
+
+export function isSameOrigin(requestUrl: string): boolean {
+  const parsedOrigin = resolveUrl(requestUrl)
+  return (
+    parsedOrigin.protocol === currentOrigin.protocol && parsedOrigin.host === currentOrigin.host
+  )
+}
+
+const urlParsingNode = document.createElement('a')
+const currentOrigin = resolveUrl(window.location.href)
+
+function resolveUrl(url: string): ResolveUrl {
+  urlParsingNode.setAttribute('href', url)
+  const { protocol, host } = urlParsingNode
+  return {
+    protocol,
+    host
+  }
 }
