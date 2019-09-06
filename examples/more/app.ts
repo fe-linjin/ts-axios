@@ -2,7 +2,20 @@ import axios from '../../src/index'
 import 'nprogress/nprogress.css'
 import NProgress from 'nprogress'
 
+/** HTTP授权例子  */
+axios.post('/more/post', {
+    a: 1
+}, {
+    auth: {
+        username: 'Lin',
+        password: '123456'
+    }
+}).then(res => {
+    console.log(res)
+})
+
 /** 上传下载监控例子 */
+/** 
 const instance = axios.create()
 
 function calculatePercentage(loaded: number, total: number) {
@@ -62,29 +75,31 @@ uploadEle.addEventListener('click', e => {
         instance.post('/more/upload', data)
     }   
 })
-
+*/
 
 /** cookie 例子 */
-// document.cookie = 'a=1'
+/**
+document.cookie = 'a=1'
 
-// axios.get('/more/get').then(res => {
-//     console.log(res)
-// })
+axios.get('/more/get').then(res => {
+    console.log(res)
+})
 
-// axios.post('http://127.0.0.1:8088/more/server2', {}, {
-//     withCredentials: true
-// }).then(res => {
-//     console.log(res)
-// })
-
+axios.post('http://127.0.0.1:8088/more/server2', {}, {
+    withCredentials: true
+}).then(res => {
+    console.log(res)
+})
+*/
 
 /** token 防xsrf攻击例子 */
-// const instance = axios.create({
-//     xsrfCookieName: 'XSRF-TOKEN-D',
-//     xsrfHeaderName: 'X-XSRF-TOKEN-D'
-// })
+/**
+const instance = axios.create({
+    xsrfCookieName: 'XSRF-TOKEN-D',
+    xsrfHeaderName: 'X-XSRF-TOKEN-D'
+})
 
-// instance.get('/more/get').then(res => {
-//     console.log(res)
-// })
-
+instance.get('/more/get').then(res => {
+    console.log(res)
+})
+*/
