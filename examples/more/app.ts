@@ -4,7 +4,17 @@ import NProgress from 'nprogress'
 import { AxiosError } from '../../src/helpers/error';
 import qs from 'qs'
 
+/** baseURL */
+/** 
+const instance = axios.create({
+    baseURL: 'http://www.baidu.com'
+})
+
+instance.get('/more/get')
+*/
+
 /** 自定义参数序列化 */
+/** 
 axios.get('/more/get', {
     params: new URLSearchParams('a=b&b=c')
 }).then(res => {
@@ -38,7 +48,7 @@ instance.get('/more/get', {
 }).then(res => {
     console.log(res)
 })
-
+*/
 
 /** 自定义合法状态码 */
 /** 
