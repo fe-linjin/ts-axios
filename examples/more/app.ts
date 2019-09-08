@@ -1,8 +1,20 @@
 import axios from '../../src/index'
 import 'nprogress/nprogress.css'
 import NProgress from 'nprogress'
+import { AxiosError } from '../../src/helpers/error';
 
+/** 自定义合法状态码 */
+axios.get('/more/304', {
+    validateStatus(status) {
+        return status >= 200 && status < 400
+    }
+}).then(res => {
+    console.log(res)
+}).catch((e: AxiosError) => {
+    console.log(e.message)
+})
 /** HTTP授权例子  */
+/**
 axios.post('/more/post', {
     a: 1
 }, {
@@ -13,6 +25,8 @@ axios.post('/more/post', {
 }).then(res => {
     console.log(res)
 })
+*/
+
 
 /** 上传下载监控例子 */
 /** 
