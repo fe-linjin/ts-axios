@@ -1,5 +1,4 @@
 import { isDate, isPlainObject, isURLSearchParams } from './util'
-import { encode } from 'punycode'
 
 interface ResolveUrl {
   protocol: string
@@ -52,7 +51,7 @@ export function buildUrl(
           // 普通对象，不包含formData类型等
           val = JSON.stringify(val)
         }
-        parts.push(`${key}=${val}`)
+        parts.push(`${encode(key)}=${encode(val)}`)
       })
     })
     console.log(parts)
@@ -86,4 +85,15 @@ function resolveUrl(url: string): ResolveUrl {
     protocol,
     host
   }
+}
+
+function encode(val: string): string {
+  return encodeURIComponent(val)
+    .replace(/%40/g, '@')
+    .replace(/%3A/gi, ':')
+    .replace(/%24/g, '$')
+    .replace(/%2C/gi, ',')
+    .replace(/%20/g, '+')
+    .replace(/%5B/gi, '[')
+    .replace(/%5D/gi, ']')
 }
