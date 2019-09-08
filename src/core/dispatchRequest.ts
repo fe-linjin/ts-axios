@@ -21,8 +21,8 @@ function transformConfig(config: AxiosRequestConfig) {
 
 /** transform url */
 function transformUrl(config: AxiosRequestConfig) {
-  const { url, params } = config
-  return buildUrl(url!, params)
+  const { url, params, paramsSerializer } = config
+  return buildUrl(url!, params, paramsSerializer)
 }
 
 /** transform response data */

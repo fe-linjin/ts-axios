@@ -1,4 +1,4 @@
-import { isDate, isPlainObject } from './util'
+import { isDate, isPlainObject, isURLSearchParams } from './util'
 import { encode } from 'punycode'
 
 interface ResolveUrl {
@@ -14,39 +14,51 @@ interface ResolveUrl {
  * @param {*} [params]
  * @returns {string}
  */
-export function buildUrl(url: string, params?: any): string {
+export function buildUrl(
+  url: string,
+  params?: any,
+  paramsSerializer?: (params: any) => string
+): string {
   if (!params) {
     return url
   }
 
   const parts: string[] = []
 
-  Object.keys(params).forEach(key => {
-    const val = params[key]
-    if (val === null || typeof val === 'undefined') {
-      return // 结束本次forEach
-    }
+  let serialzedParams
 
-    let values = []
-    if (Array.isArray(val)) {
-      values = val
-      key += '[]'
-    } else {
-      values = [key]
-    }
-    values.forEach(val => {
-      if (isDate(val)) {
-        val = val.toISOString()
-      } else if (isPlainObject(val)) {
-        // 普通对象，不包含formData类型等
-        val = JSON.stringify(val)
+  if (paramsSerializer) {
+    serialzedParams = paramsSerializer(params)
+  } else if (isURLSearchParams(params)) {
+    serialzedParams = params.toString()
+  } else {
+    Object.keys(params).forEach(key => {
+      const val = params[key]
+      if (val === null || typeof val === 'undefined') {
+        return // 结束本次forEach
       }
-      parts.push(`${encode(key)}=${encode(val)}`)
+
+      let values = []
+      if (Array.isArray(val)) {
+        values = val
+        key += '[]'
+      } else {
+        values = [val]
+      }
+      values.forEach(val => {
+        if (isDate(val)) {
+          val = val.toISOString()
+        } else if (isPlainObject(val)) {
+          // 普通对象，不包含formData类型等
+          val = JSON.stringify(val)
+        }
+        parts.push(`${key}=${val}`)
+      })
     })
-  })
-
-  let serialzedParams = parts.join('&')
-
+    console.log(parts)
+    serialzedParams = parts.join('&')
+  }
+  console.log(serialzedParams)
   if (serialzedParams) {
     const markIndex = url.indexOf('#')
     if (markIndex !== -1) {
@@ -54,8 +66,7 @@ export function buildUrl(url: string, params?: any): string {
     }
     url += url.indexOf('?') === -1 ? '?' : '&'
   }
-
-  return url
+  return url + serialzedParams
 }
 
 export function isSameOrigin(requestUrl: string): boolean {
